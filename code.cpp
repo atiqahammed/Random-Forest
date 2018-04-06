@@ -4,6 +4,14 @@
 using namespace std;
 
 
+#define max_depth 5
+
+struct Node {
+	int index;
+	bool isLeaf;
+	vector<Node> child;
+	string decision;
+};
 
 
 vector<vector<string>> data;
@@ -53,6 +61,8 @@ void selectTrainAndTestData(vector<vector<string>> &trainData, vector<vector<str
 int main(void) {
 
 	inputData();
+	int sizeOfForest = sqrt(data[0].size());
+	cout << sizeOfForest << endl;
 
 	//for(int i = 0; i <  10; i++) {
 		vector<vector<string>> trainData;
@@ -66,6 +76,8 @@ int main(void) {
 		selectTrainAndTestData(trainData, testData, randomlyChoosedArray);
 
 
+
+
 		/*
 		for(int i = 0; i < trainData.size(); i++) {
 			for(int j = 0; j < trainData[i].size(); j++) 
@@ -74,7 +86,7 @@ int main(void) {
 		}*/
 
 
-		
+
 
 		/*for(int i = 0; i < randomlyChoosedArray.size(); i++) {
 			cout << randomlyChoosedArray[i] << endl;
