@@ -130,19 +130,19 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 	vector<int> attributes;
 	getRandomArray(attributes, sizeOfForest, data[0].size() - 2);
 
-	
+	/*
 	for(int i = 0; i < attributes.size(); i++)
 		cout << attributes[i] << endl;
 
 	cout << "--------------" << endl;
-	
+	*/
 
 	string value;
 	int index = getIndexOfHighest(attributes, trainData);
 
 
 
-	cout << index << endl;
+	//cout << index << endl;
 
 
 	map<string, int> count; 
@@ -181,7 +181,7 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 
 
 	depth++;
-	cout << "in depth " << depth << " start >> " << endl;
+	//cout << "in depth " << depth << " start >> " << endl;
 
 	if(depth > 2) {
 		root.isLeaf = true;
@@ -190,7 +190,7 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 		set<string> myset1;
 		int in  = trainData[0].size() - 1;
 
-		cout << "---------- " << in << endl;
+		//cout << "---------- " << in << endl;
 
 		for(int i = 0; i < trainData.size(); i++) {
 			count[trainData[i][in]]++;		
@@ -202,21 +202,17 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 
 		string str1 = *it1;
 		
-		cout << str1 << endl;
+		//cout << str1 << endl;
 		
 		for ( ; it1!=myset1.end(); ++it1) {
 	    	if(count[*it1] > count[str1]) {
 	    		str1 = *it1;
 	    	}
 
-
-	    	cout << ' ' << *it1 << " " << count[*it1] << endl;
+	    	//cout << ' ' << *it1 << " " << count[*it1] << endl;
 	    }
 
-	    cout << "----------------------------    " << str1 << endl;
-
 	    root.decision = str1;
-
 
 	    it1=myset1.begin();
 	    str1 = *it1;
@@ -227,33 +223,20 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 	    }
 
 	    for ( ; it1!=myset1.end(); ++it1) {
-	    	
 	    	if(*it1 != root.decision) {
-
-	    		if(count[*it1] > count[str1]) {
+	    		if(count[*it1] > count[str1])
 		    		str1 = *it1;
-		    	}
-
-
-		    	cout << ' ' << *it1 << " " << count[*it1] << endl;
-
+		    	//cout << ' ' << *it1 << " " << count[*it1] << endl;
 		    }
-
-	    	
 	    }
-
-	    //cout << str1 << endl;
 
 	    root.decision2 = str1;
 
 
-	    cout << "....... >> " << root.decision << endl;
-	    cout << "....... >> " << root.decision2 << endl;
-
-	    //cout << "hello" << endl;
+	    //cout << "....... >> " << root.decision << endl;
+	    //cout << "....... >> " << root.decision2 << endl;
 		return;
 	}
-
 
 	Node child1, child2;
 
@@ -262,43 +245,6 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 
 	root.child.push_back(child1);
 	root.child.push_back(child2);
-
-	cout << "cout of depth >> " << depth << " byr bye" << endl;
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-	 
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-	//recurse
 }
 
 
@@ -342,49 +288,114 @@ int main(void) {
 			cout << "---------------------------------------" << endl;
 		}
 
+		//cout << forest.size() << endl;
 
+
+
+		
 
 
 
 		
 
-
-
+		double rightAns = 0.0;
 		
+		for(int i = 0; i < testData.size(); i++) {
+
+			map<string, int> count;
+			set<string> answers;
+
+			cout << "test data " << i << endl;
+			for(int j = 0; j < forest.size(); j++) {
+
+				Node tempNode = forest[j];
+				string result;
+
+				while(1) {
+					if(tempNode.isLeaf) {
+						if(tempNode.condition == testData[i][tempNode.index]) result = tempNode.decision;
+						else result = tempNode.decision2;
+						break;
+
+					} else {
+
+						if(tempNode.condition == testData[i][tempNode.index]) tempNode = tempNode.child[0];
+						else tempNode = tempNode.child[1];
+					}
+				}
+
+
+				count[result]++;
+				answers.insert(result);
+				//cout << result << "  is forest result and original is " << testData[i][testData[0].size() - 1] << endl;
+
+
+
+			}
+
+
+			set<string>::iterator it1=answers.begin();
+			string str1 = *it1;
+			
+			for ( ; it1!=answers.end(); ++it1) {
+		    	if(count[*it1] > count[str1]) {
+		    		str1 = *it1;
+		    	}
+
+		    	//cout << ' ' << *it1 << " " << count[*it1] << endl;
+		    }
+
+		    if(str1 == testData[i][testData[0].size() - 1]) rightAns++;
+		}
+
+
+		cout << rightAns/testData.size() << endl;
+
 
 
 		/*
-		for(int i = 0; i < 10; i++) {
-
-			Node tempNode = root;
-
-		string result;
-
-		while(1){
 
 
-			if(tempNode.isLeaf) {
-				if(tempNode.condition == testData[i][tempNode.index]) result = tempNode.decision;
-				else result = tempNode.decision2;
-				break;
 
-			} else {
 
-				if(tempNode.condition == testData[i][tempNode.index]) tempNode = tempNode.child[0];
-				else tempNode = tempNode.child[1];
+		Node tempNode = root;
+
+			string result;
+
+			while(1){
+
+
+				if(tempNode.isLeaf) {
+					if(tempNode.condition == testData[i][tempNode.index]) result = tempNode.decision;
+					else result = tempNode.decision2;
+					break;
+
+				} else {
+
+					if(tempNode.condition == testData[i][tempNode.index]) tempNode = tempNode.child[0];
+					else tempNode = tempNode.child[1];
+				}
+
 			}
-
-		}
 
 
 
 
 		cout << result << "     >> 0 " << testData[i][testData[0].size() - 1] << endl;
 
-	}
 
 
-	*/
+
+
+
+
+
+
+
+		*/
+
+
+	
 		//cout << data[0].size() << endl;
 
 		/*
