@@ -13,6 +13,7 @@ struct Node {
 	string condition;
 	//vector<string> condition;
 	string decision;
+	string decision2;
 };
 
 
@@ -112,7 +113,7 @@ int getIndexOfHighest(vector<int> attributes, vector<vector<string>> trainData) 
 
 	//cout << index << endl;
 
-	return index;
+	return attributes[index];
 
 }
 
@@ -129,63 +130,162 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 	vector<int> attributes;
 	getRandomArray(attributes, sizeOfForest, data[0].size() - 2);
 
-	/*
+	
 	for(int i = 0; i < attributes.size(); i++)
 		cout << attributes[i] << endl;
 
-	*/
+	cout << "--------------" << endl;
+	
 
 	string value;
 	int index = getIndexOfHighest(attributes, trainData);
 
 
 
-	map<string, int> count;
-	vector<string> allValue; 
+	cout << index << endl;
+
+
+	map<string, int> count; 
+	set<string> myset;
 
 	for(int i = 0; i < trainData.size(); i++) {
 		count[trainData[i][index]]++;		
-		if(!(find(allValue.begin(), allValue.end(), trainData[i][index])!=allValue.end()))
-			allValue.push_back(trainData[i][index]);
+		myset.insert(trainData[i][index]);
 	}
 
 
-	int valueIndex = 0;
+	set<string>::iterator it=myset.begin();
 
-	for(int i = 1; i <  allValue.size(); i++) {
-		
-		if(count[allValue[i]] > count[allValue[valueIndex]]) {
-			valueIndex = i;
-		}
-		//cout << allValue[i] << " " << count[allValue[i]] << endl;
-
-		//double probability = (double)count[allValue[i]] / trainData.size();
-		//cout << probability << endl;
-		//entropy += probability * log2(probability);
-	}
+	string str = *it;
+	for ( ; it!=myset.end(); ++it) {
+    	if(count[*it] > count[str]) {
+    		str = *it;
+    	}
 
 
+    	//cout << ' ' << *it << " " << count[*it] << endl;
+    }
+
+	  //cout <<"--------------" <<'\n';
+
+	  //cout << str << endl;
+
+	//cout << trainData.size() << endl;
 
 
-	//cout << index << endl;
-
-
-
-
-
-
-
-
-
+	//cout << trainData[0].size() << endl;
 
 	root.index = index;
-	root.condition = allValue[valueIndex];
-
+	root.isLeaf = false;
+	root.condition = str;
 
 
 	depth++;
-	if(depth > max_depth)
+	cout << "in depth " << depth << " start >> " << endl;
+
+	if(depth > 2) {
+		root.isLeaf = true;
+
+
+		set<string> myset1;
+		int in  = trainData[0].size() - 1;
+
+		cout << "---------- " << in << endl;
+
+		for(int i = 0; i < trainData.size(); i++) {
+			count[trainData[i][in]]++;		
+			myset1.insert(trainData[i][in]);
+		}
+
+
+		set<string>::iterator it1=myset1.begin();
+
+		string str1 = *it1;
+		
+		cout << str1 << endl;
+		
+		for ( ; it1!=myset1.end(); ++it1) {
+	    	if(count[*it1] > count[str1]) {
+	    		str1 = *it1;
+	    	}
+
+
+	    	cout << ' ' << *it1 << " " << count[*it1] << endl;
+	    }
+
+	    cout << "----------------------------    " << str1 << endl;
+
+	    root.decision = str1;
+
+
+	    it1=myset1.begin();
+	    str1 = *it1;
+
+	    if(str1 == root.decision) {
+	    	++it1;
+			str1 = *it1;	    	
+	    }
+
+	    for ( ; it1!=myset1.end(); ++it1) {
+	    	
+	    	if(*it1 != root.decision) {
+
+	    		if(count[*it1] > count[str1]) {
+		    		str1 = *it1;
+		    	}
+
+
+		    	cout << ' ' << *it1 << " " << count[*it1] << endl;
+
+		    }
+
+	    	
+	    }
+
+	    //cout << str1 << endl;
+
+	    root.decision2 = str1;
+
+
+	    cout << "....... >> " << root.decision << endl;
+	    cout << "....... >> " << root.decision2 << endl;
+
+	    //cout << "hello" << endl;
 		return;
+	}
+
+
+	Node child1, child2;
+
+	createNewRoot(child1, trainData, depth);
+	createNewRoot(child2, trainData, depth);
+
+	root.child.push_back(child1);
+	root.child.push_back(child2);
+
+	cout << "cout of depth >> " << depth << " byr bye" << endl;
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+	 
+
+
+
+	
 
 
 
@@ -211,7 +311,7 @@ void createNewRoot(Node &root, vector<vector<string>> trainData, int depth) {
 
 
 int main(void) {
-
+	freopen("data.txt", "r", stdin);
 	inputData();
 	sizeOfForest = sqrt(data[0].size());
 
@@ -229,9 +329,62 @@ int main(void) {
 			entropyOfIndex[j] = -1.0;
 
 
-		Node root;
+		
+		vector<Node> forest;
 
-		createNewRoot(root, trainData, 1);
+
+		for(int i = 0; i < sizeOfForest; i++) {
+			cout << "start of constructing tree number: " << i + 1 << endl;
+			Node root;
+			createNewRoot(root, trainData, 0);
+			forest.push_back(root);
+			cout << "end of constructing tree number: " << i + 1 << endl;
+			cout << "---------------------------------------" << endl;
+		}
+
+
+
+
+
+		
+
+
+
+		
+
+
+		/*
+		for(int i = 0; i < 10; i++) {
+
+			Node tempNode = root;
+
+		string result;
+
+		while(1){
+
+
+			if(tempNode.isLeaf) {
+				if(tempNode.condition == testData[i][tempNode.index]) result = tempNode.decision;
+				else result = tempNode.decision2;
+				break;
+
+			} else {
+
+				if(tempNode.condition == testData[i][tempNode.index]) tempNode = tempNode.child[0];
+				else tempNode = tempNode.child[1];
+			}
+
+		}
+
+
+
+
+		cout << result << "     >> 0 " << testData[i][testData[0].size() - 1] << endl;
+
+	}
+
+
+	*/
 		//cout << data[0].size() << endl;
 
 		/*
